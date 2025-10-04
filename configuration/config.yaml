@@ -1,0 +1,7 @@
+Controller:
+  type: PID
+  file: controllers/3dofPID.yaml
+
+ControlSystem:
+  rate: 10 # Hz
+
