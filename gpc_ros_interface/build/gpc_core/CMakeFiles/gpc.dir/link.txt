@@ -1,0 +1,2 @@
+/usr/bin/ar qc libgpc.a CMakeFiles/gpc.dir/src/ControlSystem.cpp.o CMakeFiles/gpc.dir/src/PIDController.cpp.o
+/usr/bin/ranlib libgpc.a
