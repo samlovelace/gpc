@@ -4,7 +4,7 @@
 #include <iostream>
 #include <thread> 
 
-ControlSystem::ControlSystem(std::shared_ptr<IStateFetcher> aStateFetcher) : mStateFetcher(aStateFetcher)
+ControlSystem::ControlSystem(std::shared_ptr<IStateFetcher> aStateFetcher) : mStateFetcher(aStateFetcher), mControlRate(-1)
 {
 
 }
@@ -30,14 +30,27 @@ void ControlSystem::init(const std::string& aFilePath, const std::string& aFileN
         throw std::runtime_error("Invalid controller configuration"); 
     }
 
+    YAML::Node controlSystemConfig; 
+    if(!ConfigManager::get().getConfig<YAML::Node>("ControlSystem", controlSystemConfig))
+    {
+        throw std::runtime_error("Missing or invalid ControlSystem configuration"); 
+    }
+
+    if(!ConfigManager::get().getConfig<int>("rate", mControlRate, controlSystemConfig))
+    {
+        throw std::runtime_error("Missing or invalid ControlSystem rate"); 
+    }
+
+
 }
 
 void ControlSystem::run()
 {
-    Eigen::VectorXd goal(3); 
-    int rate = 1; // Hz TODO: make configurable 
-    RateController controlRate(rate); 
-    std::this_thread::sleep_for(std::chrono::duration<double>(1/(double)rate)); 
+    std::vector<double> values = {1.0, 2.0, 3.0};
+    Eigen::VectorXd goal = Eigen::Map<Eigen::VectorXd>(values.data(), values.size());
+    
+    RateController controlRate(mControlRate); 
+    std::this_thread::sleep_for(std::chrono::duration<double>(1/(double)mControlRate)); 
 
     while(true)
     {

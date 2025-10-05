@@ -19,5 +19,7 @@ private:
     std::shared_ptr<IStateFetcher> mStateFetcher; 
     std::shared_ptr<IController> mController; 
 
+    int mControlRate; 
+
 };
 #endif //CONTROLSYSTEM_H

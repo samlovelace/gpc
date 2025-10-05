@@ -39,6 +39,12 @@ public:
     }
 
     template<typename T>
+    bool getConfig(const std::string& key, T& value)
+    {
+        return getConfig<T>(key, value, mRoot); 
+    }
+
+    template<typename T>
     bool getConfig(const std::string& key, T& value, YAML::Node& aNode) const 
     {
         auto node = findKeyRecursive(aNode, key);

@@ -14,6 +14,7 @@ RosStateFetcher::~RosStateFetcher()
 
 Eigen::VectorXd RosStateFetcher::fetchState()
 {
-    std::cout << "Fetching state from ros topic..." << std::endl; 
-    return Eigen::VectorXd(3); 
+    std::vector<double> values = {3.0, 2.0, 1.0};
+    Eigen::VectorXd state = Eigen::Map<Eigen::VectorXd>(values.data(), values.size()); 
+    return state;
 }

@@ -21,6 +21,9 @@ PIDController::PIDController(std::map<std::string, std::vector<double>> aGainsMa
         std::cout << std::endl; 
     }
 
+    mPrevState.resize(mDof); 
+    mErrorIntegral.resize(mDof); 
+
 }
 
 PIDController::~PIDController()
@@ -35,8 +38,11 @@ Eigen::VectorXd PIDController::compute(const Eigen::VectorXd& aGoal, const Eigen
         // handle somehow 
     }
 
-    Eigen::VectorXd error = aGoal - aState; 
-    Eigen::VectorXd command(mDof); 
+    Eigen::VectorXd error = aGoal - aState;    
+    std::cout << "Error: " << error << std::endl; 
+
+    Eigen::VectorXd command; 
+    command.resize(mDof); 
 
     for(int i = 0; i < mDof; i++)
     {
@@ -52,7 +58,8 @@ Eigen::VectorXd PIDController::compute(const Eigen::VectorXd& aGoal, const Eigen
         command(i) = P + I + D; 
     }
 
-    mPrevState = aState;
+    std::cout << "PID Control Input: " << command << std::endl; 
 
+    mPrevState = aState;
     return command; 
 }
