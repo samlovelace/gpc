@@ -23,12 +23,11 @@ void ControlSystem::init(const std::string& aFilePath, const std::string& aFileN
     } 
 
     // create the controller impl 
-    mController = ControllerFactory::create(aFilePath); 
+    mController = ControllerFactory::create(aFilePath);
+    mDynamicSystem = DynamicSystemFactory::create(aFilePath);  
 
-    if(nullptr == mController)
-    {
-        throw std::runtime_error("Invalid controller configuration"); 
-    }
+    if(nullptr == mController) throw std::runtime_error("Invalid controller configuration"); 
+    if(nullptr == mDynamicSystem) throw std::runtime_error("Invalid dynamics configuration"); 
 
     YAML::Node controlSystemConfig; 
     if(!ConfigManager::get().getConfig<YAML::Node>("ControlSystem", controlSystemConfig))
@@ -49,16 +48,17 @@ void ControlSystem::run()
     std::vector<double> values = {1.0, 2.0, 3.0};
     Eigen::VectorXd goal = Eigen::Map<Eigen::VectorXd>(values.data(), values.size());
     
-    RateController controlRate(mControlRate); 
-    std::this_thread::sleep_for(std::chrono::duration<double>(1/(double)mControlRate)); 
+    RateController rate(mControlRate); 
+    rate.start(); 
+    rate.block(); // control rate warm-up  
 
     while(true)
     {
-        controlRate.start(); 
+        rate.start(); 
 
         auto state = mStateFetcher->fetchState(); 
-        mController->compute(goal, state, controlRate.getDeltaTime());  
+        mController->compute(goal, state, rate.getDeltaTime());  
         
-        controlRate.block(); 
+        rate.block(); 
     }
 }

@@ -12,6 +12,8 @@ public:
     PIDController(std::map<std::string, std::vector<double>> aGainsMap);
     ~PIDController() override; 
 
+    bool init() override; 
+
     Eigen::VectorXd compute(const Eigen::VectorXd& aGoal, 
                             const Eigen::VectorXd& aState, 
                             const double& aDeltaTime_s) override; 

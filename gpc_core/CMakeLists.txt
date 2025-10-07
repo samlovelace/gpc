@@ -6,7 +6,9 @@ find_package(yaml-cpp REQUIRED)
 
 set(PROJECT_SOURCES
     ${CMAKE_CURRENT_LIST_DIR}/src/ControlSystem.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/src/LinearSystem.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/PIDController.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/src/LQRController.cpp
 )
 
 add_library(${PROJECT_NAME} STATIC ${PROJECT_SOURCES})

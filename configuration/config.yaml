@@ -1,6 +1,10 @@
 Controller:
-  type: PID
-  file: controllers/3dofPID.yaml
+  type: LQR
+  file: controllers/LQR.yaml
+
+Dynamics:
+  type: linear
+  file: dynamics/simple.yaml
 
 ControlSystem:
   rate: 10 # Hz

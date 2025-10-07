@@ -1,0 +1,4 @@
+# Q and R matrices along with the dynamic system
+
+Q: [[10, 0], [0, 1]]
+R: [[1]]

@@ -8,6 +8,7 @@ class IController
 public:
     virtual ~IController() = default; 
 
+    virtual bool init() = 0; 
     virtual Eigen::VectorXd compute(const Eigen::VectorXd& aGoal, 
                                     const Eigen::VectorXd& aState, 
                                     const double& aDeltaTime_s) = 0; 

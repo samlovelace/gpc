@@ -7,6 +7,7 @@
 #include "gpc/IController.hpp"
 
 #include "gpc/PIDController.h"
+#include "gpc/LQRController.h"
  
 class ControllerFactory 
 { 
@@ -59,6 +60,10 @@ public:
             gains["Kd"] = aControllerSpecificConfig["gains"]["Kd"].as<std::vector<double>>();
 
             return std::make_shared<PIDController>(gains);
+        }
+        else if ("LQR" == aControllerType || "lqr" == aControllerType)
+        {
+            return std::make_shared<LQRController>(); 
         }
         else
         {

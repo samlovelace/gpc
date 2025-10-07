@@ -31,6 +31,12 @@ PIDController::~PIDController()
     
 }
 
+bool PIDController::init()
+{
+    // TODO: something here? 
+    return true; 
+}
+
 Eigen::VectorXd PIDController::compute(const Eigen::VectorXd& aGoal, const Eigen::VectorXd& aState, const double& aDeltaTime_s)
 {
     if((aGoal.size() != aState.size()) && (aGoal.size() != mDof || aState.size() != mDof))

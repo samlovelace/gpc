@@ -1,0 +1,10 @@
+# Simple state space model for a 1-d moving object
+# https://en.wikipedia.org/wiki/State-space_representation
+
+A: [[0, 1], [-2, -3]]
+B: [[0], [1]]
+C: [[1, 0]]
+
+inputs:
+  min: -1
+  max: 1
