@@ -1,6 +1,6 @@
 Controller:
-  type: LQR
-  file: controllers/LQR.yaml
+  type: PID
+  file: controllers/3dofPID.yaml
 
 Dynamics:
   type: linear

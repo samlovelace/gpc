@@ -4,6 +4,7 @@
 #include <string> 
 #include <memory>
 #include "gpc/ConfigManager.hpp"
+#include "gpc/ConstraintFactory.hpp"
 #include "gpc/ISafetyFilter.hpp"
 
 #include "gpc/QpSafetyFilter.h"
@@ -52,7 +53,28 @@ public:
     {
         if("qp" == aSafetyFilterType || "QP" == aSafetyFilterType)
         {
-            return std::make_shared<QpSafetyFilter>();  
+            std::cout << "Making QP based safety filter" << std::endl;
+            std::cout << YAML::Dump(aSafetyFilterSpecificConfig) << std::endl;  
+            
+            // parse config file for constraints 
+            std::shared_ptr<IConstraint> c = nullptr; 
+            std::vector<std::shared_ptr<IConstraint>> constraints; 
+
+            for(const auto& constraintConfig : aSafetyFilterSpecificConfig["Constraints"])
+            {
+                std::string type = constraintConfig["type"].as<std::string>(); 
+                std::cout << "Making constraint of type: " << type << std::endl; 
+
+                c = ConstraintFactory::create(type, constraintConfig); 
+                if(nullptr == c) throw std::runtime_error("Invalid constraint configuration"); 
+                constraints.push_back(c); 
+            }
+
+            Eigen::VectorXd weights = utils::eigenVectorFromConfig(aSafetyFilterSpecificConfig["Weights"]); 
+
+            auto sf = std::make_shared<QpSafetyFilter>(weights); 
+            sf->setConstraints(constraints); 
+            return sf;  
         }
         else
         {

@@ -26,5 +26,19 @@ namespace utils
         return matrix; 
     }
 
+    inline Eigen::VectorXd eigenVectorFromConfig(const YAML::Node& aVectorInYaml)
+    {
+        size_t size = aVectorInYaml.size();
+
+        Eigen::VectorXd vec(size); 
+
+        for (size_t i = 0; i < size; ++i) 
+        {
+            vec(i) = aVectorInYaml[i].as<double>();
+        }
+
+        return vec; 
+    }
+
 } // namespace utils
 #endif

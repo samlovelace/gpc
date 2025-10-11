@@ -1,6 +1,7 @@
 
 #include "gpc/PIDController.h"
 #include <iostream>
+#include "gpc/EigenPrinter.hpp"
 
 PIDController::PIDController(std::map<std::string, std::vector<double>> aGainsMap) : mGainsMap(aGainsMap), mDof(-1)
 {
@@ -44,8 +45,9 @@ Eigen::VectorXd PIDController::compute(const Eigen::VectorXd& aGoal, const Eigen
         // handle somehow 
     }
 
-    Eigen::VectorXd error = aGoal - aState;    
-    std::cout << "Error: " << error << std::endl; 
+    Eigen::VectorXd error = aGoal - aState;
+    EigenPrinter single(EigenPrinter::Style::SingleLine, 4, "Error: ");   
+    single.print(error);  
 
     Eigen::VectorXd command; 
     command.resize(mDof); 
@@ -64,7 +66,8 @@ Eigen::VectorXd PIDController::compute(const Eigen::VectorXd& aGoal, const Eigen
         command(i) = P + I + D; 
     }
 
-    std::cout << "PID Control Input: " << command << std::endl; 
+    EigenPrinter single2(EigenPrinter::Style::SingleLine, 4, "PID Control Input: ");   
+    single2.print(command);   
 
     mPrevState = aState;
     return command; 

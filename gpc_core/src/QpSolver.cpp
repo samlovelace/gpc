@@ -35,6 +35,11 @@ bool QpSolver::setProblemData(const SparseMat& P,
     // Store (optional, useful for updates)
     P_ = P_up; A_ = A; q_ = q; l_ = l; u_ = u;
 
+    // clear previous 
+    mSolver.clearSolver(); 
+    mSolver.data()->clearHessianMatrix();
+    mSolver.data()->clearLinearConstraintsMatrix(); 
+
     // --- load into OSQP-Eigen ---
     mSolver.data()->setNumberOfVariables(n_);
     mSolver.data()->setNumberOfConstraints(m_);

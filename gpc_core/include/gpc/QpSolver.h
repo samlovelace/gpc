@@ -15,6 +15,18 @@ struct Settings {
     double timeLimit_s = 0.0; // 0.0 => no limit
 };
 
+using SparseMat = Eigen::SparseMatrix<double, Eigen::ColMajor, long>; 
+using Vec = Eigen::VectorXd;
+
+struct QpProblem {
+    SparseMat H;
+    Vec       f;
+    SparseMat A;
+    Vec       lb;
+    Vec       ub;
+    int dim() const { return static_cast<int>(f.size()); }
+};
+
 /**
  * Solves the Quadratic Programming problem in the form 
  *                          min ½ xᵀP x + qᵀx 
@@ -22,13 +34,12 @@ struct Settings {
  */
 class QpSolver 
 { 
-public: 
-    using SparseMat = Eigen::SparseMatrix<double, Eigen::ColMajor, long>; 
-    using Vec = Eigen::VectorXd; 
+public:  
 
     QpSolver();
     ~QpSolver();
 
+    // TODO: update to take in QpProblem struct 
     bool setProblemData(const SparseMat& P,
                         const Vec&       q,
                         const SparseMat& A,

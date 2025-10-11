@@ -4,6 +4,8 @@
 #include <iostream>
 #include <thread> 
 
+#include "gpc/EigenPrinter.hpp"
+
 ControlSystem::ControlSystem(std::shared_ptr<IStateFetcher> aStateFetcher) : 
     mStateFetcher(aStateFetcher), mControlRate(-1), mDynamicSystem(nullptr), 
     mUseSafetyFilter(false)
@@ -55,6 +57,7 @@ void ControlSystem::init(const std::string& aFilePath, const std::string& aFileN
     {
         mSafetyFilter = SafetyFilterFactory::create(aFilePath); 
         if(nullptr == mSafetyFilter) throw std::runtime_error("Invalid SafetyFilter configuration"); 
+        mSafetyFilter->configure(3); 
     }
 
     if(!mController->init(mDynamicSystem))
@@ -73,20 +76,39 @@ void ControlSystem::run()
     rate.start(); 
     rate.block(); // control rate warm-up  
 
-    while(true)
+    while (true) 
     {
-        rate.start(); 
+        rate.start();
 
-        auto state = mStateFetcher->fetchState(); 
-        Eigen::VectorXd controlInput = mController->compute(goal, state, rate.getDeltaTime());  
+        auto state = mStateFetcher->fetchState();
+        Eigen::VectorXd controlInput = mController->compute(goal, state, rate.getDeltaTime());
 
-        if(mSafetyFilter && mUseSafetyFilter)
+        if (mSafetyFilter && mUseSafetyFilter) 
         {
-            mSafetyFilter->compute(controlInput); 
+            SafetyContext sctx;
+            sctx.x     = state;                 
+            sctx.xdot  = Eigen::VectorXd();     // optional
+            sctx.u_nom = controlInput;
+            sctx.dt    = rate.getDeltaTime();
+
+            Eigen::VectorXd u_safe;
+            if (mSafetyFilter->compute(sctx, u_safe)) 
+            {
+                controlInput = u_safe;
+            } 
+            else 
+            {
+                // TODO: 
+                // fallback policy if infeasible (clip, zero, last valid, etc.)
+                // controlInput.setZero();
+            }
         }
 
-        //mCommander->send(controlInput); 
-        
-        rate.block(); 
+        EigenPrinter single(EigenPrinter::Style::SingleLine, 4, "Safe Control Input: ");   
+        single.print(controlInput);
+        // mCommander->send(controlInput);
+
+        rate.block();
     }
+
 }
