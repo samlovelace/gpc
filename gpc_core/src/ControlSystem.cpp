@@ -4,7 +4,9 @@
 #include <iostream>
 #include <thread> 
 
-ControlSystem::ControlSystem(std::shared_ptr<IStateFetcher> aStateFetcher) : mStateFetcher(aStateFetcher), mControlRate(-1), mDynamicSystem(nullptr)
+ControlSystem::ControlSystem(std::shared_ptr<IStateFetcher> aStateFetcher) : 
+    mStateFetcher(aStateFetcher), mControlRate(-1), mDynamicSystem(nullptr), 
+    mUseSafetyFilter(false)
 {
 
 }
@@ -24,12 +26,12 @@ void ControlSystem::init(const std::string& aFilePath, const std::string& aFileN
 
     // create the controller impl 
     mController = ControllerFactory::create(aFilePath);  
-    if(nullptr == mController) throw std::runtime_error("Invalid controller configuration"); 
+    if(nullptr == mController) throw std::runtime_error("Invalid Controller configuration"); 
     
     if(mController->isModelBased())
     {
         mDynamicSystem = DynamicSystemFactory::create(aFilePath);
-        if(nullptr == mDynamicSystem) throw std::runtime_error("Invalid dynamics configuration");
+        if(nullptr == mDynamicSystem) throw std::runtime_error("Invalid Dynamics configuration");
     }
     
     YAML::Node controlSystemConfig; 
@@ -41,6 +43,18 @@ void ControlSystem::init(const std::string& aFilePath, const std::string& aFileN
     if(!ConfigManager::get().getConfig<int>("rate", mControlRate, controlSystemConfig))
     {
         throw std::runtime_error("Missing or invalid ControlSystem rate"); 
+    }
+
+    if(!ConfigManager::get().getConfig<bool>("safetyFilterEnabled", mUseSafetyFilter, controlSystemConfig))
+    {
+        std::string safetyFilterState = mUseSafetyFilter == true ? "enabled" : "disabled"; 
+        std::cout << "Safety Filter " + safetyFilterState << std::endl;
+    }
+
+    if(mUseSafetyFilter)
+    {
+        mSafetyFilter = SafetyFilterFactory::create(aFilePath); 
+        if(nullptr == mSafetyFilter) throw std::runtime_error("Invalid SafetyFilter configuration"); 
     }
 
     if(!mController->init(mDynamicSystem))
@@ -64,7 +78,14 @@ void ControlSystem::run()
         rate.start(); 
 
         auto state = mStateFetcher->fetchState(); 
-        mController->compute(goal, state, rate.getDeltaTime());  
+        Eigen::VectorXd controlInput = mController->compute(goal, state, rate.getDeltaTime());  
+
+        if(mSafetyFilter && mUseSafetyFilter)
+        {
+            mSafetyFilter->compute(controlInput); 
+        }
+
+        //mCommander->send(controlInput); 
         
         rate.block(); 
     }

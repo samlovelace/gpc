@@ -8,3 +8,8 @@ Dynamics:
 
 ControlSystem:
   rate: 10 # Hz
+  safetyFilterEnabled: true
+
+SafetyFilter:
+  type: qp
+  file: safety/qpsf.yaml

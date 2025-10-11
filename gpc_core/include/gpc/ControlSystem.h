@@ -5,6 +5,7 @@
 #include "gpc/IStateFetcher.hpp"
 #include "gpc/ControllerFactory.hpp"
 #include "gpc/DynamicSystemFactory.hpp"
+#include "gpc/SafetyFilterFactory.hpp"
 #include "gpc/ConfigManager.hpp"
  
 class ControlSystem 
@@ -20,8 +21,10 @@ private:
     std::shared_ptr<IStateFetcher> mStateFetcher; 
     std::shared_ptr<IController> mController; 
     std::shared_ptr<IDynamicSystem> mDynamicSystem; 
+    std::shared_ptr<ISafetyFilter> mSafetyFilter; 
 
     int mControlRate; 
+    bool mUseSafetyFilter; 
 
 };
 #endif //CONTROLSYSTEM_H
