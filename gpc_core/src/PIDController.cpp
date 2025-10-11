@@ -10,7 +10,7 @@ PIDController::PIDController(std::map<std::string, std::vector<double>> aGainsMa
     {
         if(gains.size() != mDof)
         {
-            throw std::runtime_error("INvalid PID controller gains. Make sure all gains are same size"); 
+            throw std::runtime_error("Invalid PID controller gains. Make sure all gains vectors are the same size"); 
         }
 
         std::cout << axis << ": "; 
@@ -31,7 +31,7 @@ PIDController::~PIDController()
     
 }
 
-bool PIDController::init()
+bool PIDController::init(std::shared_ptr<IDynamicSystem> aDynamics)
 {
     // TODO: something here? 
     return true; 

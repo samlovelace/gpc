@@ -2,9 +2,9 @@
 #include "gpc/LinearSystem.h"
 #include <iostream>
 
-LinearSystem::LinearSystem()
+LinearSystem::LinearSystem(const Eigen::MatrixXd& A, const Eigen::MatrixXd& B, const Eigen::MatrixXd& C) : A(A), B(B), C(C)
 {
-    std::cout << "[LinSys] im alive" << std::endl; 
+    
 }
 
 LinearSystem::~LinearSystem()

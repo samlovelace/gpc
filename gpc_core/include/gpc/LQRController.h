@@ -9,7 +9,7 @@ public:
     LQRController();
     ~LQRController() override; 
 
-    bool init() override; 
+    bool init(std::shared_ptr<IDynamicSystem> aDynamics) override; 
 
     Eigen::VectorXd compute(const Eigen::VectorXd& aGoal, 
                             const Eigen::VectorXd& aState, 

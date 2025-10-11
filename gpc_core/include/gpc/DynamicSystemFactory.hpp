@@ -3,6 +3,7 @@
  
 #include <memory>
 #include <yaml-cpp/yaml.h>
+#include "utils.hpp"
 #include "IDynamicSystem.hpp" 
 #include "ConfigManager.hpp"
 
@@ -53,7 +54,12 @@ public:
         if("linear" == aDynamicsType || "Linear" == aDynamicsType || "stateSpace" == aDynamicsType)
         {
             // load linear system
-            return std::make_shared<LinearSystem>(); 
+            // expects A, B, C system Matrices 
+            Eigen::MatrixXd A = utils::eigenMatrixFromConfig(aDynamicsSpecificConfig["A"]); 
+            Eigen::MatrixXd B = utils::eigenMatrixFromConfig(aDynamicsSpecificConfig["B"]); 
+            Eigen::MatrixXd C = utils::eigenMatrixFromConfig(aDynamicsSpecificConfig["C"]); 
+
+            return std::make_shared<LinearSystem>(A, B, C); 
         }
         else
         {

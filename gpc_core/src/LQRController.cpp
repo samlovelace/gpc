@@ -4,7 +4,7 @@
 
 LQRController::LQRController()
 {
-
+    mIsModelBased = true; 
 }
 
 LQRController::~LQRController()
@@ -12,9 +12,9 @@ LQRController::~LQRController()
 
 }
 
-bool LQRController::init()
+bool LQRController::init(std::shared_ptr<IDynamicSystem> aDynamics)
 {
-
+    return true; 
 }
 
 Eigen::VectorXd LQRController::compute(const Eigen::VectorXd& aGoal, 
@@ -29,5 +29,5 @@ Eigen::VectorXd LQRController::compute(const Eigen::VectorXd& aGoal,
     //     if (U(i) > u_max_(i)) U(i) = u_max_(i);
     //     if (U(i) < u_min_(i)) U(i) = u_min_(i);
     // }
-
+    return Eigen::VectorXd(3); 
 }

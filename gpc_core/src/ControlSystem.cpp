@@ -4,7 +4,7 @@
 #include <iostream>
 #include <thread> 
 
-ControlSystem::ControlSystem(std::shared_ptr<IStateFetcher> aStateFetcher) : mStateFetcher(aStateFetcher), mControlRate(-1)
+ControlSystem::ControlSystem(std::shared_ptr<IStateFetcher> aStateFetcher) : mStateFetcher(aStateFetcher), mControlRate(-1), mDynamicSystem(nullptr)
 {
 
 }
@@ -23,12 +23,15 @@ void ControlSystem::init(const std::string& aFilePath, const std::string& aFileN
     } 
 
     // create the controller impl 
-    mController = ControllerFactory::create(aFilePath);
-    mDynamicSystem = DynamicSystemFactory::create(aFilePath);  
-
+    mController = ControllerFactory::create(aFilePath);  
     if(nullptr == mController) throw std::runtime_error("Invalid controller configuration"); 
-    if(nullptr == mDynamicSystem) throw std::runtime_error("Invalid dynamics configuration"); 
-
+    
+    if(mController->isModelBased())
+    {
+        mDynamicSystem = DynamicSystemFactory::create(aFilePath);
+        if(nullptr == mDynamicSystem) throw std::runtime_error("Invalid dynamics configuration");
+    }
+    
     YAML::Node controlSystemConfig; 
     if(!ConfigManager::get().getConfig<YAML::Node>("ControlSystem", controlSystemConfig))
     {
@@ -40,7 +43,11 @@ void ControlSystem::init(const std::string& aFilePath, const std::string& aFileN
         throw std::runtime_error("Missing or invalid ControlSystem rate"); 
     }
 
-
+    if(!mController->init(mDynamicSystem))
+    {
+        std::cerr << "Failed to initialize the controller" << std::endl; 
+        return; 
+    }
 }
 
 void ControlSystem::run()
