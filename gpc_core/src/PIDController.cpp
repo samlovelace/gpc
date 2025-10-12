@@ -43,6 +43,7 @@ Eigen::VectorXd PIDController::compute(const Eigen::VectorXd& aGoal, const Eigen
     if((aGoal.size() != aState.size()) && (aGoal.size() != mDof || aState.size() != mDof))
     {
         // handle somehow 
+        return Eigen::VectorXd(mDof); 
     }
 
     Eigen::VectorXd error = aGoal - aState;

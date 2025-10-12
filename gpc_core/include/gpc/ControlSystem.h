@@ -3,6 +3,7 @@
  
 #include <memory>
 #include "gpc/IStateFetcher.hpp"
+#include "gpc/IGoalFetcher.hpp"
 #include "gpc/ControllerFactory.hpp"
 #include "gpc/DynamicSystemFactory.hpp"
 #include "gpc/SafetyFilterFactory.hpp"
@@ -11,7 +12,7 @@
 class ControlSystem 
 { 
 public:
-    ControlSystem(std::shared_ptr<IStateFetcher> aStateFetcher); 
+    ControlSystem(std::shared_ptr<IStateFetcher> aStateFetcher, std::shared_ptr<IGoalFetcher> aGoalFetcher); 
     ~ControlSystem();
 
     void init(const std::string& aFilePath, const std::string& aFileName); 
@@ -19,6 +20,7 @@ public:
 
 private:
     std::shared_ptr<IStateFetcher> mStateFetcher; 
+    std::shared_ptr<IGoalFetcher> mGoalFetcher; 
     std::shared_ptr<IController> mController; 
     std::shared_ptr<IDynamicSystem> mDynamicSystem; 
     std::shared_ptr<ISafetyFilter> mSafetyFilter; 

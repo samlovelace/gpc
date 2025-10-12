@@ -34,9 +34,9 @@ TEST_F(QpSolver_Test, Simple_Unconstrained)
     ub << OSQP_INFTY, OSQP_INFTY, OSQP_INFTY;
     lb = -ub; 
 
-    QpSolver::SparseMat Ps = QpSolver::toSparse(P); 
+    SparseMat Ps = QpSolver::toSparse(P); 
     Ps = QpSolver::makeUpperSymmetric(Ps); 
-    QpSolver::SparseMat As = QpSolver::toSparse(A); 
+    SparseMat As = QpSolver::toSparse(A); 
 
     // setup problem 
     ASSERT_TRUE(solver.setProblemData(Ps, q, As, lb, ub));

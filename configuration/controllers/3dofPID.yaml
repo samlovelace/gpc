@@ -1,6 +1,3 @@
-state:
-  dim: 3
-
 gains:
   Kp: [1, 2, 3]
   Ki: [4, 5, 6]

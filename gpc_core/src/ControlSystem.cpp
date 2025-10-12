@@ -6,8 +6,11 @@
 
 #include "gpc/EigenPrinter.hpp"
 
-ControlSystem::ControlSystem(std::shared_ptr<IStateFetcher> aStateFetcher) : 
-    mStateFetcher(aStateFetcher), mControlRate(-1), mDynamicSystem(nullptr), 
+ControlSystem::ControlSystem(std::shared_ptr<IStateFetcher> aStateFetcher, std::shared_ptr<IGoalFetcher> aGoalFetcher) : 
+    mStateFetcher(aStateFetcher), 
+    mGoalFetcher(aGoalFetcher),
+    mControlRate(-1), 
+    mDynamicSystem(nullptr), 
     mUseSafetyFilter(false)
 {
 
@@ -68,10 +71,10 @@ void ControlSystem::init(const std::string& aFilePath, const std::string& aFileN
 }
 
 void ControlSystem::run()
-{
-    std::vector<double> values = {1.0, 2.0, 3.0};
-    Eigen::VectorXd goal = Eigen::Map<Eigen::VectorXd>(values.data(), values.size());
-    
+{   
+    auto state = mStateFetcher->fetchState(); 
+    mGoalFetcher->setGoal(state); 
+
     RateController rate(mControlRate); 
     rate.start(); 
     rate.block(); // control rate warm-up  
@@ -80,10 +83,11 @@ void ControlSystem::run()
     {
         rate.start();
 
+        auto goal = mGoalFetcher->fetchGoal(); 
         auto state = mStateFetcher->fetchState();
         Eigen::VectorXd controlInput = mController->compute(goal, state, rate.getDeltaTime());
 
-        if (mSafetyFilter && mUseSafetyFilter) 
+        if (mUseSafetyFilter && mSafetyFilter) 
         {
             SafetyContext sctx;
             sctx.x     = state;                 
