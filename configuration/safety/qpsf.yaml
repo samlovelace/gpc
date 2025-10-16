@@ -1,7 +1,7 @@
 Constraints:
   - type: input_box
-    min: [-1, -1, -1]
-    max: [1, 1, 1]
+    min: [-10, -10, -10]
+    max: [10, 10, 10]
 
   # - type: ecbf_distance
   #   radius: 0.1
@@ -19,4 +19,4 @@ Constraints:
   #   l: -inf
   #   u: 0.5
 
-Weights: [10, 0.1, 10]
+Weights: [10, 10, 10]

@@ -8,6 +8,7 @@ find_package(robot_idl REQUIRED)
 add_subdirectory(../gpc_core gpc_core)
 
 set(INTERFACE_SOURCES
+    ${CMAKE_CURRENT_LIST_DIR}/src/RosCommander.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/RosStateFetcher.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/RosGoalFetcher.cpp
     main.cpp

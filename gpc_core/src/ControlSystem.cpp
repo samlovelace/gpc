@@ -6,9 +6,12 @@
 
 #include "gpc/EigenPrinter.hpp"
 
-ControlSystem::ControlSystem(std::shared_ptr<IStateFetcher> aStateFetcher, std::shared_ptr<IGoalFetcher> aGoalFetcher) : 
+ControlSystem::ControlSystem(std::shared_ptr<IStateFetcher> aStateFetcher, 
+                             std::shared_ptr<IGoalFetcher> aGoalFetcher, 
+                             std::shared_ptr<IActuatorCommander> aCommander) : 
     mStateFetcher(aStateFetcher), 
     mGoalFetcher(aGoalFetcher),
+    mCommander(aCommander),
     mControlRate(-1), 
     mDynamicSystem(nullptr), 
     mUseSafetyFilter(false)
@@ -85,6 +88,10 @@ void ControlSystem::run()
 
         auto goal = mGoalFetcher->fetchGoal(); 
         auto state = mStateFetcher->fetchState();
+        
+        EigenPrinter singleState(EigenPrinter::Style::SingleLine, 4, "State: ");   
+        singleState.print(state);
+        
         Eigen::VectorXd controlInput = mController->compute(goal, state, rate.getDeltaTime());
 
         if (mUseSafetyFilter && mSafetyFilter) 
@@ -110,7 +117,8 @@ void ControlSystem::run()
 
         EigenPrinter single(EigenPrinter::Style::SingleLine, 4, "Safe Control Input: ");   
         single.print(controlInput);
-        // mCommander->send(controlInput);
+        
+        mCommander->send(controlInput);
 
         rate.block();
     }
