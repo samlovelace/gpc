@@ -59,7 +59,9 @@ public:
             gains["Ki"] = aControllerSpecificConfig["gains"]["Ki"].as<std::vector<double>>();
             gains["Kd"] = aControllerSpecificConfig["gains"]["Kd"].as<std::vector<double>>();
 
-            return std::make_shared<PIDController>(gains);
+            std::vector<int> indices = aControllerSpecificConfig["indices"].as<std::vector<int>>(); 
+
+            return std::make_shared<PIDController>(gains, indices);
         }
         else if ("LQR" == aControllerType || "lqr" == aControllerType)
         {

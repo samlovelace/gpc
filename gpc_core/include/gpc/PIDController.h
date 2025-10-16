@@ -9,7 +9,7 @@
 class PIDController : public IController
 { 
 public:
-    PIDController(std::map<std::string, std::vector<double>> aGainsMap);
+    PIDController(std::map<std::string, std::vector<double>> aGainsMap, std::vector<int> aSetOfIndices);
     ~PIDController() override; 
 
     bool init(std::shared_ptr<IDynamicSystem> aDynamics) override; 
@@ -21,9 +21,10 @@ public:
 private:
     std::map<std::string, std::vector<double>> mGainsMap; 
     int mDof;
+    std::vector<int> mIndices; 
     
-    Eigen::VectorXd mPrevState; 
     Eigen::VectorXd mErrorIntegral; 
+    Eigen::VectorXd mPrevError; 
 
 };
 #endif //PIDCONTROLLER_H

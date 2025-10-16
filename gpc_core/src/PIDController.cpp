@@ -3,9 +3,11 @@
 #include <iostream>
 #include "gpc/EigenPrinter.hpp"
 
-PIDController::PIDController(std::map<std::string, std::vector<double>> aGainsMap) : mGainsMap(aGainsMap), mDof(-1)
+PIDController::PIDController(std::map<std::string, std::vector<double>> aGainsMap, std::vector<int> aVecOfIndices) : 
+    mGainsMap(aGainsMap), mDof(-1)
 {
-    mDof = mGainsMap["Kp"].size(); 
+    mIndices = aVecOfIndices;
+    mDof = mIndices.size();  
 
     for(const auto& [axis, gains] : mGainsMap)
     {
@@ -22,9 +24,8 @@ PIDController::PIDController(std::map<std::string, std::vector<double>> aGainsMa
         std::cout << std::endl; 
     }
 
-    mPrevState.resize(mDof); 
     mErrorIntegral.resize(mDof); 
-
+    mPrevError.resize(mDof); 
 }
 
 PIDController::~PIDController()
@@ -55,21 +56,26 @@ Eigen::VectorXd PIDController::compute(const Eigen::VectorXd& aGoal, const Eigen
 
     for(int i = 0; i < mDof; i++)
     {
+        // TODO: update to use the configure indicies
+        int stateIndex = i; 
+
         // compute error deriv and error integral values for this axis 
-        double errorDeriv = (aState[i] - mPrevState[i]) / aDeltaTime_s; 
-        mErrorIntegral[i] += error[i] * aDeltaTime_s; 
+        double errorDeriv = (error[stateIndex] - mPrevError[stateIndex]) / aDeltaTime_s; 
+        mErrorIntegral[i] += (error[stateIndex] * aDeltaTime_s); 
 
         // compute control inputs 
-        double P = mGainsMap["Kp"][i] * error[i];
-        double I = mGainsMap["Ki"][i] * mErrorIntegral[i]; 
+        double P = mGainsMap["Kp"][i] * error[stateIndex];
+        double I = mGainsMap["Ki"][i] * mErrorIntegral[stateIndex]; 
         double D = mGainsMap["Kd"][i] * errorDeriv;  
         
+        std::cout << "P: " << P << " I: " << I << " D: " << D << "\n"; 
+
         command(i) = P + I + D; 
     }
 
     EigenPrinter single2(EigenPrinter::Style::SingleLine, 4, "PID Control Input: ");   
     single2.print(command);   
 
-    mPrevState = aState;
+    mPrevError = error; 
     return command; 
 }
