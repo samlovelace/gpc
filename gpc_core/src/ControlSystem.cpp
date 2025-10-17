@@ -88,6 +88,12 @@ void ControlSystem::run()
     obs.acc = Eigen::Vector3d::Zero(); 
     obs.radius = 0.25; 
 
+    Obstacle other; 
+    other.pos = Eigen::Vector3d(0, 1.75, 0); 
+    other.vel = Eigen::Vector3d::Zero();
+    other.acc = Eigen::Vector3d::Zero(); 
+    other.radius = 0.25; 
+
     while (true) 
     {
         rate.start();
@@ -108,7 +114,8 @@ void ControlSystem::run()
             sctx.u_nom = controlInput;
             sctx.dt    = rate.getDeltaTime();
             sctx.radius = 0.25; // TODO: dont hardcode 
-            sctx.obstacles.push_back(obs); // single static obstacle 
+            sctx.obstacles.push_back(obs); 
+            sctx.obstacles.push_back(other);  
 
             Eigen::VectorXd u_safe;
             if (mSafetyFilter->compute(sctx, u_safe)) 
