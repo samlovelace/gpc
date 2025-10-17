@@ -1,9 +1,9 @@
 Constraints:
   - type: input_box
-    min: [-10, -10, -10]
-    max: [10, 10, 10]
+    min: [-10, -10, -10, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    max: [10, 10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-  # - type: ecbf_distance
+  - type: ecbf_distance
   #   radius: 0.1
   #   pos_idx: [0, 1] # indices of p in state x
   #   vel_idx: [2, 3] # indices of v in state x (omit or [] if N/A)
@@ -19,4 +19,4 @@ Constraints:
   #   l: -inf
   #   u: 0.5
 
-Weights: [10, 10, 10]
+Weights: [10, 10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0]

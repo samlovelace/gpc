@@ -19,7 +19,7 @@ void RosCommander::send(Eigen::VectorXd aControlInput)
     robot_idl::msg::AbvVec3 data; 
     data.set__x(aControlInput[0]); 
     data.set__y(aControlInput[1]); 
-    data.set__yaw(aControlInput[2]); 
+    data.set__yaw(aControlInput[6]); 
 
     robot_idl::msg::AbvCommand cmd; 
     cmd.set__type("thruster"); 

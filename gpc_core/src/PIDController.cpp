@@ -7,14 +7,14 @@ PIDController::PIDController(std::map<std::string, std::vector<double>> aGainsMa
     mGainsMap(aGainsMap), mDof(-1)
 {
     mIndices = aVecOfIndices;
-    mDof = mIndices.size();  
+    mDof = 12; 
 
     for(const auto& [axis, gains] : mGainsMap)
     {
-        if(gains.size() != mDof)
-        {
-            throw std::runtime_error("Invalid PID controller gains. Make sure all gains vectors are the same size"); 
-        }
+        // if(gains.size() != mDof)
+        // {
+        //     throw std::runtime_error("Invalid PID controller gains. Make sure all gains vectors are the same size"); 
+        // }
 
         std::cout << axis << ": "; 
         for(const auto& gain : gains)
@@ -54,23 +54,29 @@ Eigen::VectorXd PIDController::compute(const Eigen::VectorXd& aGoal, const Eigen
     Eigen::VectorXd command; 
     command.resize(mDof); 
 
+    int gainMatrixIndex = 0; 
+
     for(int i = 0; i < mDof; i++)
     {
-        // TODO: update to use the configure indicies
-        int stateIndex = i; 
+        if (std::find(mIndices.begin(), mIndices.end(), i) != mIndices.end()) 
+        { 
+            // compute error deriv and error integral values for this axis 
+            double errorDeriv = (error[i] - mPrevError[i]) / aDeltaTime_s; 
+            mErrorIntegral[i] += (error[i] * aDeltaTime_s); 
 
-        // compute error deriv and error integral values for this axis 
-        double errorDeriv = (error[stateIndex] - mPrevError[stateIndex]) / aDeltaTime_s; 
-        mErrorIntegral[i] += (error[stateIndex] * aDeltaTime_s); 
+            // compute control inputs 
+            double P = mGainsMap["Kp"][gainMatrixIndex] * error[i];
+            double I = mGainsMap["Ki"][gainMatrixIndex] * mErrorIntegral[i]; 
+            double D = mGainsMap["Kd"][gainMatrixIndex] * errorDeriv;  
 
-        // compute control inputs 
-        double P = mGainsMap["Kp"][i] * error[stateIndex];
-        double I = mGainsMap["Ki"][i] * mErrorIntegral[stateIndex]; 
-        double D = mGainsMap["Kd"][i] * errorDeriv;  
-        
-        std::cout << "P: " << P << " I: " << I << " D: " << D << "\n"; 
-
-        command(i) = P + I + D; 
+            command(i) = P + I + D;
+            gainMatrixIndex++; 
+        } 
+        else 
+        {
+            // uncontrolled state
+            command(i) = 0.0; 
+        }
     }
 
     EigenPrinter single2(EigenPrinter::Style::SingleLine, 4, "PID Control Input: ");   

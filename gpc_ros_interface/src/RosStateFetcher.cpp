@@ -5,7 +5,7 @@
 
 RosStateFetcher::RosStateFetcher() 
 {
-    Eigen::VectorXd init = Eigen::Vector3d::Zero(); 
+    Eigen::VectorXd init = Eigen::Matrix<double, 12, 1>::Zero();  
     setLatestState(init); 
 
     RosTopicManager::getInstance()->createSubscriber<robot_idl::msg::AbvState>("abv/state", 
@@ -32,28 +32,21 @@ void RosStateFetcher::setLatestState(Eigen::VectorXd aState)
 }
 
 void RosStateFetcher::stateCallback(robot_idl::msg::AbvState::SharedPtr aMsg)
-{
-    // TODO: this is the proper way to populate the state 
-    // Eigen::VectorXd state(13); 
-    // state[0] = aMsg->position.x; 
-    // state[1] = aMsg->position.y; 
-    // state[2] = 0.0; // constant z for abv state  
-    // state[3] = aMsg->velocity.x; 
-    // state[4] = aMsg->velocity.y;
-    // state[5] = 0.0; // constant z vel for abv state 
-    
-    // state[6] = aMsg->position.yaw; 
-    // state[7] = 0.0; 
-    // state[8] = 0.0; 
-    // state[9] = aMsg->velocity.yaw; 
-    // state[10] = 0.0; 
-    // state[11] = 0.0; 
-
-
-    Eigen::VectorXd state(3); 
+{ 
+    Eigen::VectorXd state(12); 
     state[0] = aMsg->position.x; 
     state[1] = aMsg->position.y; 
-    state[2] = aMsg->position.yaw; 
+    state[2] = aMsg->position.z;   
+    state[3] = aMsg->velocity.x; 
+    state[4] = aMsg->velocity.y;
+    state[5] = aMsg->velocity.z;  
+    
+    state[6] = aMsg->orientation.z; 
+    state[7] = aMsg->orientation.y; 
+    state[8] = aMsg->orientation.x; 
+    state[9] = aMsg->ang_vel.z; 
+    state[10] = aMsg->ang_vel.y; 
+    state[11] = aMsg->ang_vel.x; 
     
     setLatestState(state); 
 }

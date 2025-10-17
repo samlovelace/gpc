@@ -63,7 +63,7 @@ void ControlSystem::init(const std::string& aFilePath, const std::string& aFileN
     {
         mSafetyFilter = SafetyFilterFactory::create(aFilePath); 
         if(nullptr == mSafetyFilter) throw std::runtime_error("Invalid SafetyFilter configuration"); 
-        mSafetyFilter->configure(3); 
+        mSafetyFilter->configure(12); // TODO:  
     }
 
     if(!mController->init(mDynamicSystem))
@@ -81,6 +81,12 @@ void ControlSystem::run()
     RateController rate(mControlRate); 
     rate.start(); 
     rate.block(); // control rate warm-up  
+
+    Obstacle obs; 
+    obs.pos = Eigen::Vector3d(1, 1, 0); 
+    obs.vel = Eigen::Vector3d::Zero();
+    obs.acc = Eigen::Vector3d::Zero(); 
+    obs.radius = 0.25; 
 
     while (true) 
     {
@@ -101,11 +107,15 @@ void ControlSystem::run()
             sctx.xdot  = Eigen::VectorXd();     // optional
             sctx.u_nom = controlInput;
             sctx.dt    = rate.getDeltaTime();
+            sctx.radius = 0.25; // TODO: dont hardcode 
+            sctx.obstacles.push_back(obs); // single static obstacle 
 
             Eigen::VectorXd u_safe;
             if (mSafetyFilter->compute(sctx, u_safe)) 
             {
                 controlInput = u_safe;
+                EigenPrinter single(EigenPrinter::Style::SingleLine, 4, "Safe Control Input: ");   
+                single.print(controlInput);
             } 
             else 
             {
@@ -114,9 +124,6 @@ void ControlSystem::run()
                 // controlInput.setZero();
             }
         }
-
-        EigenPrinter single(EigenPrinter::Style::SingleLine, 4, "Safe Control Input: ");   
-        single.print(controlInput);
         
         mCommander->send(controlInput);
 

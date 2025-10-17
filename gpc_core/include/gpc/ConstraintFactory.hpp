@@ -9,6 +9,7 @@
 #include <iostream>
 
 #include "gpc/InputBoxConstraint.h"
+#include "gpc/EcbfDistanceConstraint.h"
 
 class ConstraintFactory 
 { 
@@ -24,6 +25,10 @@ public:
             Eigen::VectorXd umax = utils::eigenVectorFromConfig(aConstraintsConfig["max"]); 
 
             return std::make_shared<InputBoxConstraint>(umin, umax); 
+        }
+        else if ("ecbf_distance" == aType)
+        {
+            return std::make_shared<EcbfDistanceConstraint>(); 
         }
         else
         {

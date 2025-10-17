@@ -54,7 +54,7 @@ private:
     std::string mName;
 
     Eigen::IOFormat singleLineFmt() const {
-        return Eigen::IOFormat(mPrecision, 0, ", ", "; ", "", "", "[", "]");
+        return Eigen::IOFormat(mPrecision, 0, ",", ";", "", "", "[", "]");
     }
 
     Eigen::IOFormat prettyFmt() const {
