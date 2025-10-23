@@ -2,16 +2,20 @@
 #include "RosStateFetcher.h"
 #include <iostream>
 #include "RosTopicManager.hpp"
+#include <thread>
 
-RosStateFetcher::RosStateFetcher() 
+RosStateFetcher::RosStateFetcher() : mFirstStateCallback(false)
 {
-    Eigen::VectorXd init = Eigen::Matrix<double, 12, 1>::Zero();  
-    setLatestState(init); 
-
     RosTopicManager::getInstance()->createSubscriber<robot_idl::msg::AbvState>("abv/state", 
                                                                                std::bind(&RosStateFetcher::stateCallback,
                                                                                         this, 
                                                                                         std::placeholders::_1)); 
+
+    while(!mFirstStateCallback)
+    {
+        std::cout << "Waiting for state...\n";
+        std::this_thread::sleep_for(std::chrono::seconds(1)); 
+    }
 }
 
 RosStateFetcher::~RosStateFetcher()
@@ -33,6 +37,8 @@ void RosStateFetcher::setLatestState(Eigen::VectorXd aState)
 
 void RosStateFetcher::stateCallback(robot_idl::msg::AbvState::SharedPtr aMsg)
 { 
+    mFirstStateCallback = true; 
+
     Eigen::VectorXd state(12); 
     state[0] = aMsg->position.x; 
     state[1] = aMsg->position.y; 

@@ -20,6 +20,7 @@ private:
 private:
     Eigen::VectorXd mLatestState; 
     std::mutex mStateMutex; 
+    bool mFirstStateCallback;
    
 };
 #endif //ROSSTATEFETCHER_H

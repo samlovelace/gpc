@@ -8,7 +8,7 @@ RosGoalFetcher::RosGoalFetcher()
                                                                               std::bind(&RosGoalFetcher::goalCallback, 
                                                                                         this, 
                                                                                         std::placeholders::_1)); 
-    mGoal = Eigen::Matrix<double, 12, 1>::Zero(); 
+    //mGoal = Eigen::Matrix<double, 12, 1>::Zero(); 
 }
 
 RosGoalFetcher::~RosGoalFetcher()
