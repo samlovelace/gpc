@@ -8,7 +8,7 @@ Dynamics:
 
 ControlSystem:
   rate: 10 # Hz
-  safetyFilterEnabled: false
+  safetyFilterEnabled: true
 
 SafetyFilter:
   type: qp

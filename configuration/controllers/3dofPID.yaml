@@ -3,4 +3,4 @@ indices: [0, 1, 6] # TODO: which indices of state vector to control
 gains:
   Kp: [2.0, 2.0, 2.0]
   Ki: [0, 0, 0]
-  Kd: [5, 5, 5]
+  Kd: [10, 10, 10]
