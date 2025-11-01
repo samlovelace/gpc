@@ -11,8 +11,7 @@ public:
     RosGoalFetcher();
     ~RosGoalFetcher() override; 
 
-    Eigen::VectorXd fetchGoal() override; 
-    void setGoal(Eigen::VectorXd aGoal) override; 
+    bool startListening() override; 
 
 private:
     std::mutex mGoalMutex; 

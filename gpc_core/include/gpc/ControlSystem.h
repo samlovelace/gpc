@@ -9,6 +9,8 @@
 #include "gpc/DynamicSystemFactory.hpp"
 #include "gpc/SafetyFilterFactory.hpp"
 #include "gpc/ConfigManager.hpp"
+
+#include "gpc/GuidanceSystem.h"
  
 class ControlSystem 
 { 
@@ -28,7 +30,9 @@ private:
     std::shared_ptr<IController> mController; 
     std::shared_ptr<IDynamicSystem> mDynamicSystem; 
     std::shared_ptr<ISafetyFilter> mSafetyFilter; 
-    std::shared_ptr<IActuatorCommander> mCommander; 
+    std::shared_ptr<IActuatorCommander> mCommander;
+    
+    std::shared_ptr<GuidanceSystem> mGuidance; 
 
     int mControlRate; 
     bool mUseSafetyFilter; 

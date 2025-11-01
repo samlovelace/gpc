@@ -1,4 +1,4 @@
-indices: [0, 1, 6] # TODO: which indices of state vector to control
+indices: [0, 1, 6]
 
 gains:
   Kp: [2.0, 2.0, 2.0]

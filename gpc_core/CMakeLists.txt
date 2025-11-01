@@ -8,6 +8,7 @@ find_package(OsqpEigen REQUIRED)
 set(PROJECT_SOURCES
     ${CMAKE_CURRENT_LIST_DIR}/src/ControlSystem.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/EcbfDistanceConstraint.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/src/GuidanceSystem.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/InputBoxConstraint.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/LinearSystem.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/PIDController.cpp

@@ -16,16 +16,15 @@ RosGoalFetcher::~RosGoalFetcher()
     
 }
 
-Eigen::VectorXd RosGoalFetcher::fetchGoal()
+bool RosGoalFetcher::startListening()
 {
-    std::lock_guard<std::mutex> lock(mGoalMutex); 
-    return mGoal; 
-}
+    // ensure ros comms are good 
+    while(!rclcpp::ok())
+    {
+        std::this_thread::sleep_for(std::chrono::milliseconds(150)); 
+    }
 
-void RosGoalFetcher::setGoal(Eigen::VectorXd aGoal)
-{
-    std::lock_guard<std::mutex> lock(mGoalMutex); 
-    mGoal = aGoal;
+    return true; 
 }
 
 void RosGoalFetcher::goalCallback(robot_idl::msg::GpcGoal::SharedPtr aMsg)
@@ -37,18 +36,39 @@ void RosGoalFetcher::goalCallback(robot_idl::msg::GpcGoal::SharedPtr aMsg)
     switch (aMsg->mode)
     {
     case GpcGoal::MODE_SETPOINT:
-        
+    {
         ref = aMsg->x_ref;
         goal.resize(ref.size()); 
     
-        for(int i = 0; i < ref.size(); i++)
-        {
+        for(int i = 0; i < ref.size(); i++) {
             goal(i) = ref[i]; 
         }   
 
-        setGoal(goal); 
-
+        mGuidance->setMode(GuidanceSystem::MODE::SETPOINT); 
+        mGuidance->setGoal(goal); 
         break;
+    }
+    case GpcGoal::MODE_TRAJECTORY:
+    {
+        // will probably end up switching on trajectory types 
+        mGuidance->setMode(GuidanceSystem::MODE::TRAJECTORY); 
+        auto trajectoryToSet = GuidanceSystem::TRAJECTORY::NUM_TYPES; 
+
+        switch (aMsg->trajectory_type)
+        {
+        case GpcGoal::TRAJ_LINE2D:
+            trajectoryToSet = GuidanceSystem::TRAJECTORY::LINE_2D; 
+            break;
+        case GpcGoal::TRAJ_CIRCLE2D: 
+            trajectoryToSet = GuidanceSystem::TRAJECTORY::CIRCLE_2D; 
+        default:
+            break;
+        }
+
+        // get type of traj from message 
+        mGuidance->setTrajectory(trajectoryToSet);
+    }
+
     
     default:
         break;

@@ -14,7 +14,8 @@ ControlSystem::ControlSystem(std::shared_ptr<IStateFetcher> aStateFetcher,
     mCommander(aCommander),
     mControlRate(-1), 
     mDynamicSystem(nullptr), 
-    mUseSafetyFilter(false)
+    mUseSafetyFilter(false), 
+    mGuidance(std::make_shared<GuidanceSystem>())
 {
 
 }
@@ -71,12 +72,20 @@ void ControlSystem::init(const std::string& aFilePath, const std::string& aFileN
         std::cerr << "Failed to initialize the controller" << std::endl; 
         return; 
     }
+
+    // setup goal fetcher interface 
+    mGoalFetcher->bindGuidance(mGuidance); 
+    if(!mGoalFetcher->startListening())
+    {
+        std::cerr << "Failed to initialize GoalFetcher listening thread" << std::endl; 
+        return; 
+    }
 }
 
 void ControlSystem::run()
 {   
     auto state = mStateFetcher->fetchState(); 
-    mGoalFetcher->setGoal(state); 
+    mGuidance->setGoal(state); 
 
     RateController rate(mControlRate); 
     rate.start(); 
@@ -98,8 +107,8 @@ void ControlSystem::run()
     {
         rate.start();
 
-        auto goal = mGoalFetcher->fetchGoal(); 
-        auto state = mStateFetcher->fetchState();
+        Eigen::VectorXd state = mStateFetcher->fetchState(); 
+        Eigen::VectorXd goal = mGuidance->getNextGoal(state); 
         
         EigenPrinter singleState(EigenPrinter::Style::SingleLine, 4, "State: ");   
         singleState.print(state);

@@ -1,17 +1,20 @@
 #ifndef IGOALFETCHER_HPP
 #define IGOALFETCHER_HPP
  
+#include <memory> 
 #include <eigen3/Eigen/Dense> 
+#include "gpc/GuidanceSystem.h"
 
 class IGoalFetcher 
 { 
 public:
     virtual ~IGoalFetcher() = default; 
-    virtual Eigen::VectorXd fetchGoal() = 0;
-    virtual void setGoal(Eigen::VectorXd aGoal) {mGoal = aGoal; }  
+    virtual bool startListening() = 0;  
 
-protected:
-    Eigen::VectorXd mGoal; 
+    virtual void bindGuidance(std::shared_ptr<GuidanceSystem> aGuidancePtr) {mGuidance = aGuidancePtr; }
+
+protected: 
+    std::shared_ptr<GuidanceSystem> mGuidance; 
    
 };
 #endif //IGOALFETCHER_HPP
